@@ -1,7 +1,7 @@
 # Introduction to Exam Seating Plan Project
 
 ## Overview
-Welcome to the Exam Seating Plan project! In this group project, we, *Muhammad Rameez* and *Mehtab Khaki*, will be collaborating to develop a CLI Exam Seating Plan system using C++ programming language.
+Welcome to the Exam Seating Plan project! In this group project, we, *Muhammad Rameez* and *Mehtab Haider*, will be collaborating to develop a CLI Exam Seating Plan system using C++ programming language.
 
 ## Purpose
 The purpose of this project is to create a software solution that automates the process of generating and managing seating arrangements for exams. Our system aims to streamline tasks such as student enrollment, seating plan generation, and conflict resolution, thereby enhancing the efficiency and fairness of the exam administration process.
