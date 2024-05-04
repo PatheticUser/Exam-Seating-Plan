@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+
 using namespace std;
 
 class Student
@@ -63,29 +64,67 @@ public:
         cout << "Exam Seating Plan:" << endl;
         for (int i = 0; i < totalStudents; ++i)
         {
-            cout << "Seat " << i + 1 << ": Student " << seatingArrangement[i].getRollNumber()<< endl;
+            cout << "Seat " << i + 1 << ": Student " << seatingArrangement[i].getRollNumber() << endl;
         }
     }
 
-    // Method to save seating arrangement to a file
-    void saveToFile(string filename)
+    // Method to save seating arrangement to a file with timestamp
+    void saveToFile()
     {
-        ofstream file(filename, ios::app); // Open file in append mode
+        // Get current time
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+
+        // Open file in append mode
+        ofstream file("seating_plan.txt", ios::app);
         if (file.is_open())
         {
-            file << "Exam Seating Plan:" << endl;
+            // Append seating plan with timestamp
+            file << "Exam Seating Plan (Generated at "
+                 << ltm->tm_hour << ":" << ltm->tm_min << " on "
+                 << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << "):" << endl;
             for (int i = 0; i < totalStudents; ++i)
             {
-                file << "Seat " << i + 1 << ": Student " << seatingArrangement[i].getRollNumber()
-                << endl;
+                file << "Seat " << i + 1 << ": Student " << seatingArrangement[i].getRollNumber() << endl;
             }
+            file << endl;
             file.close();
-            cout << "Seating plan appended to " << filename << endl;
+            cout << "Seating plan appended to seating_plan.txt" << endl;
         }
         else
         {
-            cout << "Unable to open file " << filename << " for writing." << endl;
+            cout << "Unable to open file seating_plan.txt for writing." << endl;
         }
+    }
+
+    // Method to backup seating plan to a new file
+    void backupToFile(string newFilename)
+    {
+        // Open original file for reading
+        ifstream originalFile("seating_plan.txt");
+        if (!originalFile.is_open())
+        {
+            cout << "Unable to open file seating_plan.txt for reading." << endl;
+            return;
+        }
+
+        // Open new file for writing
+        ofstream backupFile(newFilename);
+        if (!backupFile.is_open())
+        {
+            cout << "Unable to open file " << newFilename << " for writing." << endl;
+            originalFile.close();
+            return;
+        }
+
+        // Copy contents from original file to backup file
+        backupFile << originalFile.rdbuf();
+
+        // Close files
+        originalFile.close();
+        backupFile.close();
+
+        cout << "Seating plan backed up to " << newFilename << endl;
     }
 
     // Destructor to free memory
@@ -125,19 +164,36 @@ int main()
     seatingPlan.generateSeatingPlan();
     seatingPlan.displaySeatingPlan();
 
-    char saveChoice;
-    cout << "Do you want to save this seating plan to a file? (Y/N): ";
-    cin >> saveChoice;
+int choice;
+do
+{
+    cout << "Choose an option:" << endl;
+    cout << "1. Save Seating Plan" << endl;
+    cout << "2. Backup Seating Plan" << endl;
+    cout << "3. Exit Seating Plan" << endl;
+    cin >> choice;
 
-    if (saveChoice == 'Y' || saveChoice == 'y')
+    if (choice == 1)
     {
-        string filename = "seating_plan.txt";
-        seatingPlan.saveToFile(filename);
+        seatingPlan.saveToFile();
+    }
+    else if (choice == 2)
+    {
+        string newFilename;
+        cout << "Enter the name of the new file: ";
+        cin >> newFilename;
+        seatingPlan.backupToFile(newFilename);
+    }
+    else if (choice == 3)
+    {
+        cout << "Exiting program." << endl;
     }
     else
     {
-        cout << "Seating plan not saved." << endl;
+        cout << "Invalid choice. Please try again." << endl;
     }
+} while (choice != 3);
+
 
     // Free allocated memory
     delete[] classStrength;
