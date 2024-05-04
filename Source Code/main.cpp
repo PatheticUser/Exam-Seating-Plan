@@ -1,7 +1,6 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
-#include <string>
 
 using namespace std;
 
@@ -93,10 +92,10 @@ public:
     // Method to display the most recent seating plan from the file
     void displaySeatingPlanFromFile()
     {
-        ifstream file("seating_plan.txt");
+        ifstream file("Seating Plan.txt");
         if (!file.is_open())
         {
-            cout << "Unable to open file seating_plan.txt for reading." << endl;
+            cout << "Unable to open file Seating Plan.txt for reading." << endl;
             return;
         }
 
@@ -127,7 +126,7 @@ public:
         tm *ltm = localtime(&now);
 
         // Open file in append mode
-        ofstream file("seating_plan.txt", ios::app);
+        ofstream file("Seating Plan.txt", ios::app);
         if (file.is_open())
         {
             // Append seating plan with timestamp
@@ -140,11 +139,11 @@ public:
             }
             file << endl;
             file.close();
-            cout << "Seating plan appended to seating_plan.txt" << endl;
+            cout << "Seating plan appended to Seating Plan.txt" << endl;
         }
         else
         {
-            cout << "Unable to open file seating_plan.txt for writing." << endl;
+            cout << "Unable to open file Seating Plan.txt for writing." << endl;
         }
     }
 
@@ -152,10 +151,10 @@ public:
     void backupToFile(string newFilename)
     {
         // Open original file for reading
-        ifstream originalFile("seating_plan.txt");
+        ifstream originalFile("Seating Plan.txt");
         if (!originalFile.is_open())
         {
-            cout << "Unable to open file seating_plan.txt for reading." << endl;
+            cout << "Unable to open file Seating Plan.txt for reading." << endl;
             return;
         }
 
