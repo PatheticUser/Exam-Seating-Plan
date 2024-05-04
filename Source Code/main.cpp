@@ -207,15 +207,22 @@ char login()
 {
     char userType;
     string username, password;
-
-    cout << "Login as (T)eacher or (S)tudent: ";
+    cout << "-------------------------------------------------" << endl;
+    cout << "|               Welcome to the Exam              |" << endl;
+    cout << "|               Seating Plan System              |" << endl;
+    cout << "|                  (Login Page)                  |" << endl;
+    cout << "-------------------------------------------------" << endl;
+    cout << "|Define your role: (T)eacher or (S)tudent ";
     cin >> userType;
 
-    cout << "Enter username: ";
+    cout << "|Enter username: ";
     cin >> username;
 
-    cout << "Enter password: ";
+    cout << "|Enter password: ";
     cin >> password;
+
+    cout << "-------------------------------------------------" << endl;
+
 
     if ((userType == 'T' || userType == 't') && username == "teacher123" && password == "password123")
     {
