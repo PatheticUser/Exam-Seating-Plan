@@ -90,19 +90,37 @@ public:
     }
 
     // Method to display the most recent seating plan from the file
+    // Method to display the most recent seating plan from the file
     void displaySeatingPlanFromFile()
     {
-        ifstream file("Seating Plan.txt");
+        ifstream file("seating_plan.txt");
         if (!file.is_open())
         {
-            cout << "Unable to open file Seating Plan.txt for reading." << endl;
+            cout << "Unable to open file seating_plan.txt for reading." << endl;
             return;
         }
 
         string line;
+        string recentSeatingPlan;
         while (getline(file, line))
         {
-            cout << line << endl;
+            if (line.find("Exam Seating Plan") != string::npos)
+            {
+                recentSeatingPlan = line + "\n";
+                while (getline(file, line) && !line.empty())
+                {
+                    recentSeatingPlan += line + "\n";
+                }
+            }
+        }
+
+        if (!recentSeatingPlan.empty())
+        {
+            cout << recentSeatingPlan << endl;
+        }
+        else
+        {
+            cout << "No seating plan found." << endl;
         }
 
         file.close();
@@ -188,9 +206,27 @@ public:
 char login()
 {
     char userType;
+    string username, password;
+
     cout << "Login as (T)eacher or (S)tudent: ";
     cin >> userType;
-    return toupper(userType);
+
+    cout << "Enter username: ";
+    cin >> username;
+
+    cout << "Enter password: ";
+    cin >> password;
+
+    if ((userType == 'T' || userType == 't') && username == "teacher123" && password == "password123")
+    {
+        return 'T';
+    }
+    else if ((userType == 'S' || userType == 's') && username == "student123" && password == "password123")
+    {
+        return 'S';
+    }
+
+    return 'X'; // Invalid user type or credentials
 }
 
 int main()
@@ -208,66 +244,52 @@ int main()
         if (userType == 'T')
         {
             // Teacher logged in
-            if (teacher.verifyLogin("teacher123", "password123"))
-            {
-                int choice;
-                cout << "Teacher logged in. Choose an option:" << endl;
-                cout << "1. Generate Seating Plan" << endl;
-                cout << "2. Save Seating Plan" << endl;
-                cout << "3. Backup Seating Plan" << endl;
-                cout << "4. Exit" << endl;
-                cin >> choice;
+            int choice;
+            cout << "Teacher logged in. Choose an option:" << endl;
+            cout << "1. Generate Seating Plan" << endl;
+            cout << "2. Save Seating Plan" << endl;
+            cout << "3. Backup Seating Plan" << endl;
+            cout << "4. Exit" << endl;
+            cin >> choice;
 
-                if (choice == 1)
-                {
-                    // Generate seating plan
-                    seatingPlan.generateSeatingPlan();
-                    seatingPlan.displaySeatingPlan();
-                }
-                else if (choice == 2)
-                {
-                    // Save seating plan
-                    seatingPlan.saveToFile();
-                }
-                else if (choice == 3)
-                {
-                    // Backup seating plan
-                    string newFilename;
-                    cout << "Enter the name of the new file: ";
-                    cin >> newFilename;
-                    seatingPlan.backupToFile(newFilename);
-                }
-                else if (choice == 4)
-                {
-                    // Exit
-                    cout << "Exiting program." << endl;
-                }
-                else
-                {
-                    cout << "Invalid choice. Please try again." << endl;
-                }
+            if (choice == 1)
+            {
+                // Generate seating plan
+                seatingPlan.generateSeatingPlan();
+                seatingPlan.displaySeatingPlan();
+            }
+            else if (choice == 2)
+            {
+                // Save seating plan
+                seatingPlan.saveToFile();
+            }
+            else if (choice == 3)
+            {
+                // Backup seating plan
+                string newFilename;
+                cout << "Enter the name of the new file: ";
+                cin >> newFilename;
+                seatingPlan.backupToFile(newFilename);
+            }
+            else if (choice == 4)
+            {
+                // Exit
+                cout << "Exiting program." << endl;
             }
             else
             {
-                cout << "Invalid credentials. Please try again." << endl;
+                cout << "Invalid choice. Please try again." << endl;
             }
         }
         else if (userType == 'S')
         {
             // Student logged in
-            if (student.verifyLogin("student123", "password123"))
-            {
-                cout << "Student logged in. Displaying Most Recent Seating Plan:" << endl;
-                seatingPlan.displaySeatingPlanFromFile();
-            }
-            else
-            {
-                cout << "Invalid credentials. Please try again." << endl;
-            }
+            cout << "Student logged in. Displaying Most Recent Seating Plan:" << endl;
+            seatingPlan.displaySeatingPlanFromFile();
         }
         else
         {
-            cout << "Invalid user type. Please try again." << endl;
+            cout << "Invalid user type or credentials. Please try again." << endl;
         }
     } while (userType != 'T' && userType != 'S');
 
