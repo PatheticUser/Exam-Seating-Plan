@@ -1,23 +1,55 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <string>
 
 using namespace std;
+
+// Teacher class
+class Teacher
+{
+private:
+    string username;
+    string password;
+
+public:
+    // Constructor
+    Teacher(string uname, string pwd) : username(uname), password(pwd) {}
+
+    // Method to verify login credentials
+    bool verifyLogin(string uname, string pwd)
+    {
+        return (username == uname && password == pwd);
+    }
+};
 
 class Student
 {
 private:
+    string username;
+    string password;
     int rollNumber;
     int classNumber;
 
 public:
-    // Constructor
-    Student() = default;
+    // Default constructor
+    Student() : rollNumber(0), classNumber(0) {}
+
+    // Parameterized constructor
     Student(int roll, int cls) : rollNumber(roll), classNumber(cls) {}
 
     // Getter methods
     int getRollNumber() { return rollNumber; }
     int getClassNumber() { return classNumber; }
+
+    // Constructor with username and password
+    Student(string uname, string pwd) : username(uname), password(pwd) {}
+
+    // Method to verify login credentials
+    bool verifyLogin(string uname, string pwd)
+    {
+        return (username == uname && password == pwd);
+    }
 };
 
 class ExamSeatingPlan
@@ -41,7 +73,7 @@ public:
         int rollNumber = 1;
         for (int i = 0; i < totalStudents; ++i)
         {
-            seatingArrangement[i] = Student(rollNumber, 1); // All students in one class
+            seatingArrangement[i] = Student(to_string(rollNumber), "password123"); // All students in one class
             rollNumber++;
         }
 
@@ -56,6 +88,25 @@ public:
             seatingArrangement[i] = seatingArrangement[randomSeat];
             seatingArrangement[randomSeat] = temp;
         }
+    }
+
+    // Method to display the most recent seating plan from the file
+    void displaySeatingPlanFromFile()
+    {
+        ifstream file("seating_plan.txt");
+        if (!file.is_open())
+        {
+            cout << "Unable to open file seating_plan.txt for reading." << endl;
+            return;
+        }
+
+        string line;
+        while (getline(file, line))
+        {
+            cout << line << endl;
+        }
+
+        file.close();
     }
 
     // Method to display the seating arrangement
@@ -134,69 +185,92 @@ public:
     }
 };
 
+// Login function
+char login()
+{
+    char userType;
+    cout << "Login as (T)eacher or (S)tudent: ";
+    cin >> userType;
+    return toupper(userType);
+}
+
 int main()
 {
-    int totalClasses;
-    cout << "Enter the number of classes: ";
-    cin >> totalClasses;
+    // Create objects for Teacher and Student
+    Teacher teacher("teacher123", "password123");
+    Student student("student123", "password123");
 
-    // Dynamically allocate memory for classStrength array
-    int *classStrength = new int[totalClasses];
+    ExamSeatingPlan seatingPlan(50, 50); // Initialize with some values
 
-    // Input class strengths and check for non-numeric input
-    int totalStudents = 0;
-    for (int i = 0; i < totalClasses; ++i)
+    char userType;
+    do
     {
-        cout << "Enter strength of class " << i + 1 << ": ";
-        if (!(cin >> classStrength[i]))
+        userType = login();
+        if (userType == 'T')
         {
-            cout << "Invalid input. Please enter a numeric value." << endl;
-            delete[] classStrength; // Free allocated memory
-            return 1;               // Exit program with error code
+            // Teacher logged in
+            if (teacher.verifyLogin("teacher123", "password123"))
+            {
+                int choice;
+                cout << "Teacher logged in. Choose an option:" << endl;
+                cout << "1. Generate Seating Plan" << endl;
+                cout << "2. Save Seating Plan" << endl;
+                cout << "3. Backup Seating Plan" << endl;
+                cout << "4. Exit" << endl;
+                cin >> choice;
+
+                if (choice == 1)
+                {
+                    // Generate seating plan
+                    seatingPlan.generateSeatingPlan();
+                    seatingPlan.displaySeatingPlan();
+                }
+                else if (choice == 2)
+                {
+                    // Save seating plan
+                    seatingPlan.saveToFile();
+                }
+                else if (choice == 3)
+                {
+                    // Backup seating plan
+                    string newFilename;
+                    cout << "Enter the name of the new file: ";
+                    cin >> newFilename;
+                    seatingPlan.backupToFile(newFilename);
+                }
+                else if (choice == 4)
+                {
+                    // Exit
+                    cout << "Exiting program." << endl;
+                }
+                else
+                {
+                    cout << "Invalid choice. Please try again." << endl;
+                }
+            }
+            else
+            {
+                cout << "Invalid credentials. Please try again." << endl;
+            }
         }
-        totalStudents += classStrength[i];
-    }
-
-    // Calculate total number of seats
-    int totalSeats = totalStudents;
-
-    ExamSeatingPlan seatingPlan(totalSeats, totalStudents);
-    seatingPlan.generateSeatingPlan();
-    seatingPlan.displaySeatingPlan();
-
-int choice;
-do
-{
-    cout << "Choose an option:" << endl;
-    cout << "1. Save Seating Plan" << endl;
-    cout << "2. Backup Seating Plan" << endl;
-    cout << "3. Exit Seating Plan" << endl;
-    cin >> choice;
-
-    if (choice == 1)
-    {
-        seatingPlan.saveToFile();
-    }
-    else if (choice == 2)
-    {
-        string newFilename;
-        cout << "Enter the name of the new file: ";
-        cin >> newFilename;
-        seatingPlan.backupToFile(newFilename);
-    }
-    else if (choice == 3)
-    {
-        cout << "Exiting program." << endl;
-    }
-    else
-    {
-        cout << "Invalid choice. Please try again." << endl;
-    }
-} while (choice != 3);
-
-
-    // Free allocated memory
-    delete[] classStrength;
+        else if (userType == 'S')
+        {
+            // Student logged in
+            if (student.verifyLogin("student123", "password123"))
+            {
+                cout << "Student logged in. Displaying Most Recent Seating Plan:" << endl;
+                seatingPlan.displaySeatingPlanFromFile();
+            }
+            else
+            {
+                cout << "Invalid credentials. Please try again." << endl;
+            }
+        }
+        else
+        {
+            cout << "Invalid user type. Please try again." << endl;
+        }
+    } while (userType != 'T' && userType != 'S');
 
     return 0;
 }
