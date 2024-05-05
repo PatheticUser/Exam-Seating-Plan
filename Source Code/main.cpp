@@ -4,9 +4,6 @@
 
 using namespace std;
 
-// Define constants for file names
-const string SEATING_PLAN_FILE = "Seating Plan.txt";
-
 // Teacher class
 class Teacher
 {
@@ -76,14 +73,15 @@ public:
         delete[] seatingArrangement;
     }
 
-     void saveToFile()
+    // Method to save seating plan to file
+    void saveToFile(string filename)
     {
         // Get current time
         time_t now = time(0);
         tm *ltm = localtime(&now);
 
         // Open file in append mode
-        ofstream file("Seating Plan.txt", ios::app);
+        ofstream file(filename, ios::app);
         if (file.is_open())
         {
             // Append seating plan with timestamp
@@ -96,19 +94,21 @@ public:
             }
             file << endl;
             file.close();
-            cout << "Seating plan appended to Seating Plan.txt" << endl;
+            cout << "Seating plan appended to " << filename << endl;
         }
         else
         {
-            cout << "Unable to open file Seating Plan.txt for writing." << endl;
+            cout << "Unable to open file " << filename << " for writing." << endl;
         }
-    }// Method to display the most recent seating plan from the file
-    void displaySeatingPlanFromFile()
+    }
+
+    // Method to display the most recent seating plan from the file
+    void displaySeatingPlanFromFile(string filename)
     {
-        ifstream file(SEATING_PLAN_FILE);
+        ifstream file(filename);
         if (!file.is_open())
         {
-            cout << "Unable to open file '" << SEATING_PLAN_FILE << "' for reading." << endl;
+            cout << "Unable to open file '" << filename << "' for reading." << endl;
             return;
         }
 
@@ -147,13 +147,14 @@ public:
             cout << "Seat " << i + 1 << ": Student " << seatingArrangement[i].getRollNumber() << endl;
         }
     }
+
     // Method to backup seating plan to a new file
     void backupToFile(string newFilename)
     {
-        ifstream originalFile(SEATING_PLAN_FILE);
+        ifstream originalFile("Seating Plan.txt");
         if (!originalFile.is_open())
         {
-            cout << "Unable to open file '" << SEATING_PLAN_FILE << "' for reading." << endl;
+            cout << "Unable to open file 'Seating Plan.txt' for reading." << endl;
             return;
         }
 
@@ -174,112 +175,111 @@ public:
     }
 
     // Method to generate seating plan with random arrangement
-void generateRandomSeatingPlan()
-{
-    int choice;
-    do
+    void generateRandomSeatingPlan(string filename)
     {
-        // Assign roll numbers to students in increasing order
-        for (int i = 0; i < totalStudents; ++i)
+        int choice;
+        do
         {
-            seatingArrangement[i] = Student(i + 1, (i / (totalStudents / totalClasses)) + 1);
-        }
-
-        // Shuffle the seating arrangement randomly
-        srand(time(0));
-        for (int i = 0; i < totalStudents; ++i)
-        {
-            int randomSeat = rand() % totalStudents;
-
-            Student temp = seatingArrangement[i];
-            seatingArrangement[i] = seatingArrangement[randomSeat];
-            seatingArrangement[randomSeat] = temp;
-        }
-
-        // Display generated seating plan
-        displaySeatingPlan();
-
-        // Save seating plan to file
-        saveToFile();
-
-        cout << "Do you want to generate another random seating plan? (1: Yes, 0: No): ";
-        cin >> choice;
-    } while (choice != 0);
-}
-
-// Method to generate seating plan with sequential arrangement
-void generateSequentialSeatingPlan()
-{
-    int choice;
-    do
-    {
-        int rollNumber = 1;
-        for (int i = 0; i < totalStudents; ++i)
-        {
-            seatingArrangement[i] = Student(rollNumber, 0);
-            rollNumber++;
-        }
-
-        // Display generated seating plan
-        displaySeatingPlan();
-
-        // Save seating plan to file
-        saveToFile();
-
-        cout << "Do you want to generate another sequential seating plan? (1: Yes, 0: No): ";
-        cin >> choice;
-    } while (choice != 0);
-}
-
-// Method to generate seating plan with mixed arrangement
-void generateMixedSeatingPlan()
-{
-    int choice;
-    do
-    {
-        int evenStepSize = totalStudents / 4;
-        int oddStepSize = totalStudents / 4;
-        int randomStepSize = totalStudents / 2;
-
-        int evenIndex = 0;
-        int oddIndex = 0;
-        int randomIndex = evenStepSize + oddStepSize;
-
-        for (int i = 0; i < evenStepSize; ++i)
-        {
-            seatingArrangement[i] = Student(evenIndex * 2 + 1, 0);
-            evenIndex++;
-        }
-
-        for (int i = 0; i < oddStepSize; ++i)
-        {
-            seatingArrangement[evenStepSize + i] = Student(oddIndex * 2 + 2, 0);
-            oddIndex++;
-        }
-
-        srand(time(0));
-        for (int i = randomIndex; i < totalStudents; ++i)
-        {
-            int randomSeat = rand() % (totalStudents - randomIndex) + randomIndex;
-            while (seatingArrangement[randomSeat].getRollNumber() != 0)
+            // Assign roll numbers to students in increasing order
+            for (int i = 0; i < totalStudents; ++i)
             {
-                randomSeat = rand() % (totalStudents - randomIndex) + randomIndex;
+                seatingArrangement[i] = Student(i + 1, (i / (totalStudents / totalClasses)) + 1);
             }
 
-            seatingArrangement[randomSeat] = Student(i + 1, 0);
-        }
+            // Shuffle the seating arrangement randomly
+            srand(time(0));
+            for (int i = 0; i < totalStudents; ++i)
+            {
+                int randomSeat = rand() % totalStudents;
 
-        // Display generated seating plan
-        displaySeatingPlan();
+                Student temp = seatingArrangement[i];
+                seatingArrangement[i] = seatingArrangement[randomSeat];
+                seatingArrangement[randomSeat] = temp;
+            }
 
-        // Save seating plan to file
-        saveToFile();
+            // Display generated seating plan
+            displaySeatingPlan();
 
-        cout << "Do you want to generate another mixed seating plan? (1: Yes, 0: No): ";
-        cin >> choice;
-    } while (choice != 0);
-}
+            // Save seating plan to file
+            saveToFile(filename);
 
+            cout << "Do you want to generate another random seating plan? (1: Yes, 0: No): ";
+            cin >> choice;
+        } while (choice != 0);
+    }
+
+    // Method to generate seating plan with sequential arrangement
+    void generateSequentialSeatingPlan(string filename)
+    {
+        int choice;
+        do
+        {
+            int rollNumber = 1;
+            for (int i = 0; i < totalStudents; ++i)
+            {
+                seatingArrangement[i] = Student(rollNumber, 0);
+                rollNumber++;
+            }
+
+            // Display generated seating plan
+            displaySeatingPlan();
+
+            // Save seating plan to file
+            saveToFile(filename);
+
+            cout << "Do you want to generate another sequential seating plan? (1: Yes, 0: No): ";
+            cin >> choice;
+        } while (choice != 0);
+    }
+
+    // Method to generate seating plan with mixed arrangement
+    void generateMixedSeatingPlan(string filename)
+    {
+        int choice;
+        do
+        {
+            int evenStepSize = totalStudents / 4;
+            int oddStepSize = totalStudents / 4;
+            int randomStepSize = totalStudents / 2;
+
+            int evenIndex = 0;
+            int oddIndex = 0;
+            int randomIndex = evenStepSize + oddStepSize;
+
+            for (int i = 0; i < evenStepSize; ++i)
+            {
+                seatingArrangement[i] = Student(evenIndex * 2 + 1, 0);
+                evenIndex++;
+            }
+
+            for (int i = 0; i < oddStepSize; ++i)
+            {
+                seatingArrangement[evenStepSize + i] = Student(oddIndex * 2 + 2, 0);
+                oddIndex++;
+            }
+
+            srand(time(0));
+            for (int i = randomIndex; i < totalStudents; ++i)
+            {
+                int randomSeat = rand() % (totalStudents - randomIndex) + randomIndex;
+                while (seatingArrangement[randomSeat].getRollNumber() != 0)
+                {
+                    randomSeat = rand() % (totalStudents - randomIndex) + randomIndex;
+                }
+
+                seatingArrangement[randomSeat] = Student(i + 1, 0);
+            }
+
+            // Display generated seating plan
+            displaySeatingPlan();
+
+            // Save seating plan to file
+            saveToFile(filename);
+
+            cout << "Do you want to generate another mixed seating plan? (1: Yes, 0: No): ";
+            cin >> choice;
+        } while (choice != 0);
+    }
 };
 
 char login()
@@ -320,9 +320,6 @@ int main()
     Teacher teacher("t", "p");
     Student student("s", "p");
 
-    // Declare seatingPlan object
-    ExamSeatingPlan seatingPlan(0, 0, 0); // Dummy object to access member functions ;)
-
     char userType;
     do
     {
@@ -359,7 +356,8 @@ int main()
                     }
 
                     int totalSeats = totalStudents;
-                    seatingPlan = ExamSeatingPlan(totalSeats, totalStudents, totalClasses);
+                    string filename = "Seating Plan.txt";
+                    ExamSeatingPlan seatingPlan(totalSeats, totalStudents, totalClasses);
 
                     cout << "Choose an option:" << endl;
                     cout << "1. Generate Random Seating Plan" << endl;
@@ -370,15 +368,15 @@ int main()
 
                     if (choice == 1)
                     {
-                        seatingPlan.generateRandomSeatingPlan();
+                        seatingPlan.generateRandomSeatingPlan(filename);
                     }
                     else if (choice == 2)
                     {
-                        seatingPlan.generateSequentialSeatingPlan();
+                        seatingPlan.generateSequentialSeatingPlan(filename);
                     }
                     else if (choice == 3)
                     {
-                        seatingPlan.generateMixedSeatingPlan();
+                        seatingPlan.generateMixedSeatingPlan(filename);
                     }
                     else if (choice == 4)
                     {
@@ -397,6 +395,7 @@ int main()
                     string newFilename;
                     cout << "Enter the name of the new file: ";
                     cin >> newFilename;
+                    ExamSeatingPlan seatingPlan(0, 0, 0);
                     seatingPlan.backupToFile(newFilename);
                 }
                 else if (choice == 3)
@@ -412,7 +411,8 @@ int main()
         else if (userType == 'S')
         {
             cout << "Student logged in. Displaying Most Recent Seating Plan:" << endl;
-            seatingPlan.displaySeatingPlanFromFile();
+            ExamSeatingPlan seatingPlan(0, 0, 0);
+            seatingPlan.displaySeatingPlanFromFile("Seating Plan.txt");
         }
         else
         {
