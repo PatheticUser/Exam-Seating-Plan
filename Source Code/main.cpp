@@ -4,6 +4,9 @@
 
 using namespace std;
 
+// Define constants for file names
+const string SEATING_PLAN_FILE = "Seating Plan.txt";
+
 // Teacher class
 class Teacher
 {
@@ -56,24 +59,56 @@ class ExamSeatingPlan
 private:
     int totalSeats;
     int totalStudents;
-    int totalClasses; 
+    int totalClasses;
     Student *seatingArrangement;
 
 public:
     // Constructor
-    ExamSeatingPlan(int totalSeats, int totalStudents, int totalClasess)
-        : totalSeats(totalSeats), totalStudents(totalStudents), totalClasses(totalClasess) 
+    ExamSeatingPlan(int totalSeats, int totalStudents, int totalClasses)
+        : totalSeats(totalSeats), totalStudents(totalStudents), totalClasses(totalClasses)
     {
         seatingArrangement = new Student[totalStudents];
     }
 
-    // Method to display the most recent seating plan from the file
+    // Destructor
+    ~ExamSeatingPlan()
+    {
+        delete[] seatingArrangement;
+    }
+
+     void saveToFile()
+    {
+        // Get current time
+        time_t now = time(0);
+        tm *ltm = localtime(&now);
+
+        // Open file in append mode
+        ofstream file("Seating Plan.txt", ios::app);
+        if (file.is_open())
+        {
+            // Append seating plan with timestamp
+            file << "Exam Seating Plan (Generated at "
+                 << ltm->tm_hour << ":" << ltm->tm_min << " on "
+                 << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << "):" << endl;
+            for (int i = 0; i < totalStudents; ++i)
+            {
+                file << "Seat " << i + 1 << ": Student " << seatingArrangement[i].getRollNumber() << endl;
+            }
+            file << endl;
+            file.close();
+            cout << "Seating plan appended to Seating Plan.txt" << endl;
+        }
+        else
+        {
+            cout << "Unable to open file Seating Plan.txt for writing." << endl;
+        }
+    }// Method to display the most recent seating plan from the file
     void displaySeatingPlanFromFile()
     {
-        ifstream file("Seating Plan.txt");
+        ifstream file(SEATING_PLAN_FILE);
         if (!file.is_open())
         {
-            cout << "Unable to open file 'Seating Plan.txt' for reading." << endl;
+            cout << "Unable to open file '" << SEATING_PLAN_FILE << "' for reading." << endl;
             return;
         }
 
@@ -112,48 +147,16 @@ public:
             cout << "Seat " << i + 1 << ": Student " << seatingArrangement[i].getRollNumber() << endl;
         }
     }
-
-    // Method to save seating arrangement to a file with timestamp
-    void saveToFile()
-    {
-        // Get current time
-        time_t now = time(0);
-        tm *ltm = localtime(&now);
-
-        // Open file in append mode
-        ofstream file("Seating Plan.txt", ios::app);
-        if (file.is_open())
-        {
-            // Append seating plan with timestamp
-            file << "Exam Seating Plan (Generated at "
-                 << ltm->tm_hour << ":" << ltm->tm_min << " on "
-                 << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << "):" << endl;
-            for (int i = 0; i < totalStudents; ++i)
-            {
-                file << "Seat " << i + 1 << ": Student " << seatingArrangement[i].getRollNumber() << endl;
-            }
-            file << endl;
-            file.close();
-            cout << "Seating plan appended to Seating Plan.txt" << endl;
-        }
-        else
-        {
-            cout << "Unable to open file 'Seating Plan.txt' for writing." << endl;
-        }
-    }
-
     // Method to backup seating plan to a new file
     void backupToFile(string newFilename)
     {
-        // Open original file for reading
-        ifstream originalFile("Seating Plan.txt");
+        ifstream originalFile(SEATING_PLAN_FILE);
         if (!originalFile.is_open())
         {
-            cout << "Unable to open file 'Seating Plan.txt' for reading." << endl;
+            cout << "Unable to open file '" << SEATING_PLAN_FILE << "' for reading." << endl;
             return;
         }
 
-        // Open new file for writing
         ofstream backupFile(newFilename);
         if (!backupFile.is_open())
         {
@@ -162,10 +165,8 @@ public:
             return;
         }
 
-        // Copy contents from original file to backup file
         backupFile << originalFile.rdbuf();
 
-        // Close files
         originalFile.close();
         backupFile.close();
 
@@ -173,13 +174,14 @@ public:
     }
 
     // Method to generate seating plan with random arrangement
-    void generateRandomSeatingPlan()
+void generateRandomSeatingPlan()
+{
+    int choice;
+    do
     {
         // Assign roll numbers to students in increasing order
         for (int i = 0; i < totalStudents; ++i)
         {
-            // Assign roll numbers starting from 1 up to the total number of students
-            // Also, assign class numbers sequentially based on the number of students per class
             seatingArrangement[i] = Student(i + 1, (i / (totalStudents / totalClasses)) + 1);
         }
 
@@ -187,73 +189,97 @@ public:
         srand(time(0));
         for (int i = 0; i < totalStudents; ++i)
         {
-            // Generate a random index within the range of totalStudents
             int randomSeat = rand() % totalStudents;
 
-            // Swap the current student with a randomly selected student
             Student temp = seatingArrangement[i];
             seatingArrangement[i] = seatingArrangement[randomSeat];
             seatingArrangement[randomSeat] = temp;
         }
-    }
 
-    void generateMixedSeatingPlan()
+        // Display generated seating plan
+        displaySeatingPlan();
+
+        // Save seating plan to file
+        saveToFile();
+
+        cout << "Do you want to generate another random seating plan? (1: Yes, 0: No): ";
+        cin >> choice;
+    } while (choice != 0);
+}
+
+// Method to generate seating plan with sequential arrangement
+void generateSequentialSeatingPlan()
+{
+    int choice;
+    do
     {
-        // Determine the number of students to assign in each step
-        int evenStepSize = totalStudents / 4;   // Assign even roll numbers
-        int oddStepSize = totalStudents / 4;    // Assign odd roll numbers
-        int randomStepSize = totalStudents / 2; // Assign remaining randomly
+        int rollNumber = 1;
+        for (int i = 0; i < totalStudents; ++i)
+        {
+            seatingArrangement[i] = Student(rollNumber, 0);
+            rollNumber++;
+        }
+
+        // Display generated seating plan
+        displaySeatingPlan();
+
+        // Save seating plan to file
+        saveToFile();
+
+        cout << "Do you want to generate another sequential seating plan? (1: Yes, 0: No): ";
+        cin >> choice;
+    } while (choice != 0);
+}
+
+// Method to generate seating plan with mixed arrangement
+void generateMixedSeatingPlan()
+{
+    int choice;
+    do
+    {
+        int evenStepSize = totalStudents / 4;
+        int oddStepSize = totalStudents / 4;
+        int randomStepSize = totalStudents / 2;
 
         int evenIndex = 0;
         int oddIndex = 0;
         int randomIndex = evenStepSize + oddStepSize;
 
-        // Assign even roll numbers
         for (int i = 0; i < evenStepSize; ++i)
         {
-            seatingArrangement[i] = Student(evenIndex * 2 + 1, 0); 
+            seatingArrangement[i] = Student(evenIndex * 2 + 1, 0);
             evenIndex++;
         }
 
-        // Assign odd roll numbers
         for (int i = 0; i < oddStepSize; ++i)
         {
-            seatingArrangement[evenStepSize + i] = Student(oddIndex * 2 + 2, 0); 
+            seatingArrangement[evenStepSize + i] = Student(oddIndex * 2 + 2, 0);
             oddIndex++;
         }
 
-        // Assign remaining students randomly
         srand(time(0));
         for (int i = randomIndex; i < totalStudents; ++i)
         {
-            // Find an unassigned seat randomly
             int randomSeat = rand() % (totalStudents - randomIndex) + randomIndex;
             while (seatingArrangement[randomSeat].getRollNumber() != 0)
             {
                 randomSeat = rand() % (totalStudents - randomIndex) + randomIndex;
             }
 
-            // Assign roll number
-            seatingArrangement[randomSeat] = Student(i + 1, 0); 
+            seatingArrangement[randomSeat] = Student(i + 1, 0);
         }
-    }
 
-    // Method to generate seating plan with sequential arrangement
-    void generateSequentialSeatingPlan()
-    {
-        int rollNumber = 1;
-        for (int i = 0; i < totalStudents; ++i)
-        {
-            seatingArrangement[i] = Student(rollNumber, 0); 
-            rollNumber++;
-        }
-    }
+        // Display generated seating plan
+        displaySeatingPlan();
 
-    // Destructor to free-ing memory
-    ~ExamSeatingPlan()
-    {
-        delete[] seatingArrangement;
-    }
+        // Save seating plan to file
+        saveToFile();
+
+        cout << "Do you want to generate another mixed seating plan? (1: Yes, 0: No): ";
+        cin >> choice;
+    } while (choice != 0);
+}
+
 };
 
 char login()
@@ -285,7 +311,7 @@ char login()
         return 'S';
     }
 
-    return 'X'; // Invalid user type or credentials
+    return 'X';
 }
 
 int main()
@@ -303,73 +329,77 @@ int main()
         userType = login();
         if (userType == 'T')
         {
-            // Teacher logged in
             int choice;
-            cout << "Teacher logged in. Choose an option:" << endl;
-            cout << "1. Generate Seating Plan" << endl;
-            cout << "3. Backup Seating Plan" << endl;
-            cout << "4. Exit" << endl;
-            cin >> choice;
-
-            if (choice == 1)
+            do
             {
-                // Generate seating plan
-                int totalClasses;
-                cout << "Enter the number of classes: ";
-                cin >> totalClasses;
-
-                // Dynamically allocate memory for classStrength array
-                int *classStrength = new int[totalClasses];
-
-                // Input class strengths and check for non-numeric input
-                int totalStudents = 0;
-                for (int i = 0; i < totalClasses; ++i)
-                {
-                    cout << "Enter strength of class " << i + 1 << ": ";
-                    if (!(cin >> classStrength[i]))
-                    {
-                        cout << "Invalid input. Please enter a numeric value." << endl;
-                        delete[] classStrength; // Free-ing allocated memory
-                        return 1;               // Exit program with error code
-                    }
-                    totalStudents += classStrength[i];
-                }
-
-                // Calculate total number of seats
-                int totalSeats = totalStudents;
-
-                // Create seatingPlan object
-                seatingPlan = ExamSeatingPlan(totalSeats, totalStudents, totalClasses);
-                cout << "Choose an option:" << endl;
-                cout << "1. Generate Random Seating Plan" << endl;
-                cout << "2. Generate Sequential Seating Plan" << endl;
-                cout << "3. Generate mixed Seating Plan" << endl;
-                cout << "4. Save Seating Plan" << endl;
-                cout << "5. Exit" << endl;
+                cout << "Teacher logged in. Choose an option:" << endl;
+                cout << "1. Generate Seating Plan" << endl;
+                cout << "2. Backup Seating Plan" << endl;
+                cout << "3. Exit" << endl;
                 cin >> choice;
 
                 if (choice == 1)
                 {
-                    // Generate random seating plan
-                    seatingPlan.generateRandomSeatingPlan();
-                    seatingPlan.displaySeatingPlan();
+                    int totalClasses;
+                    cout << "Enter the number of classes: ";
+                    cin >> totalClasses;
+
+                    int *classStrength = new int[totalClasses];
+                    int totalStudents = 0;
+                    for (int i = 0; i < totalClasses; ++i)
+                    {
+                        cout << "Enter strength of class " << i + 1 << ": ";
+                        if (!(cin >> classStrength[i]))
+                        {
+                            cout << "Invalid input. Please enter a numeric value." << endl;
+                            delete[] classStrength;
+                            return 1;
+                        }
+                        totalStudents += classStrength[i];
+                    }
+
+                    int totalSeats = totalStudents;
+                    seatingPlan = ExamSeatingPlan(totalSeats, totalStudents, totalClasses);
+
+                    cout << "Choose an option:" << endl;
+                    cout << "1. Generate Random Seating Plan" << endl;
+                    cout << "2. Generate Sequential Seating Plan" << endl;
+                    cout << "3. Generate Mixed Seating Plan" << endl;
+                    cout << "4. Exit" << endl;
+                    cin >> choice;
+
+                    if (choice == 1)
+                    {
+                        seatingPlan.generateRandomSeatingPlan();
+                    }
+                    else if (choice == 2)
+                    {
+                        seatingPlan.generateSequentialSeatingPlan();
+                    }
+                    else if (choice == 3)
+                    {
+                        seatingPlan.generateMixedSeatingPlan();
+                    }
+                    else if (choice == 4)
+                    {
+                        cout << "Exiting program." << endl;
+                        break;
+                    }
+                    else
+                    {
+                        cout << "Invalid choice. Please try again." << endl;
+                    }
+
+                    delete[] classStrength;
                 }
                 else if (choice == 2)
                 {
-                    // Generate sequential seating plan
-                    seatingPlan.generateSequentialSeatingPlan();
-                    seatingPlan.displaySeatingPlan();
+                    string newFilename;
+                    cout << "Enter the name of the new file: ";
+                    cin >> newFilename;
+                    seatingPlan.backupToFile(newFilename);
                 }
                 else if (choice == 3)
-                {
-                    seatingPlan.generateMixedSeatingPlan();
-                    seatingPlan.displaySeatingPlan();
-                }
-                else if (choice == 4)
-                {
-                    seatingPlan.saveToFile();
-                }
-                else if (choice == 5)
                 {
                     cout << "Exiting program." << endl;
                 }
@@ -377,31 +407,10 @@ int main()
                 {
                     cout << "Invalid choice. Please try again." << endl;
                 }
-
-                // Free-ing allocated memory
-                delete[] classStrength;
-            }
-            else if (choice == 3)
-            {
-                // Backup seating plan
-                string newFilename;
-                cout << "Enter the name of the new file: ";
-                cin >> newFilename;
-                seatingPlan.backupToFile(newFilename);
-            }
-            else if (choice == 4)
-            {
-                // Exit
-                cout << "Exiting program." << endl;
-            }
-            else
-            {
-                cout << "Invalid choice. Please try again." << endl;
-            }
+            } while (choice != 3);
         }
         else if (userType == 'S')
         {
-            // Student logged in
             cout << "Student logged in. Displaying Most Recent Seating Plan:" << endl;
             seatingPlan.displaySeatingPlanFromFile();
         }
