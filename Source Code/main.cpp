@@ -332,7 +332,8 @@ int main()
                 cout << "Teacher logged in. Choose an option:" << endl;
                 cout << "1. Generate Seating Plan" << endl;
                 cout << "2. Backup Seating Plan" << endl;
-                cout << "3. Exit" << endl;
+                cout << "3. Logout" << endl;
+                cout << "4. Exit" << endl;
                 cin >> choice;
 
                 if (choice == 1)
@@ -401,24 +402,51 @@ int main()
                 else if (choice == 3)
                 {
                     cout << "Exiting program." << endl;
+                    break;
                 }
                 else
                 {
                     cout << "Invalid choice. Please try again." << endl;
                 }
-            } while (choice != 3);
+            } while (true);
         }
         else if (userType == 'S')
         {
-            cout << "Student logged in. Displaying Most Recent Seating Plan:" << endl;
-            ExamSeatingPlan seatingPlan(0, 0, 0);
-            seatingPlan.displaySeatingPlanFromFile("Seating Plan.txt");
+            int choice;
+            do
+            {
+                cout << "Student logged in. Choose an option:" << endl;
+                cout << "1. Display Most Recent Seating Plan" << endl;
+                cout << "2. Logout" << endl;
+                cout << "3. Exit" << endl;
+                cin >> choice;
+
+                if (choice == 1)
+                {
+                    ExamSeatingPlan seatingPlan(0, 0, 0);
+                    seatingPlan.displaySeatingPlanFromFile("Seating Plan.txt");
+                }
+                else if (choice == 2)
+                {
+                    cout << "Logging out..." << endl;
+                    break;
+                }
+                else if (choice == 3)
+                {
+                    cout << "Exiting program." << endl;
+                    return 0;
+                }
+                else
+                {
+                    cout << "Invalid choice. Please try again." << endl;
+                }
+            } while (true);
         }
         else
         {
             cout << "Invalid user type or credentials. Please try again." << endl;
         }
-    } while (userType != 'T' && userType != 'S');
+    } while (true);
 
     return 0;
 }
