@@ -1,0 +1,8 @@
+Name: rameez
+Age: 34
+Username: ram
+Password: pas
+Name: s
+Age: 3
+Username: zae
+Password: pass
