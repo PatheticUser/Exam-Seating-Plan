@@ -121,7 +121,7 @@ char login()
     cout << "|               Seating Plan System              |" << endl;
     cout << "|                  (Login Page)                  |" << endl;
     cout << "-------------------------------------------------" << endl;
-    cout << "|Define your role: (T)eacher or (S)tudent (E)xit: ";
+    cout << "| Define your role: (T)eacher or (S)tudent (E)xit: ";
     cin >> userType;
 
     if (userType == 'E' || userType == 'e')
@@ -130,37 +130,77 @@ char login()
     }
     else if (userType == 'T' || userType == 't')
     {
-        cout << "|Enter Username: ";
+        cout << "| Enter Username: ";
         cin >> username;
-        cout << "|Enter Password: ";
+        cout << "| Enter Password: ";
         cin >> password;
 
-        Teacher teacher("t", "p"); // Dummy teacher object
-        if (teacher.verifyLogin(username, password))
+        ifstream file("teachers.txt");
+        string line;
+        bool userExists = false;
+        while (getline(file, line))
         {
-            return 'T';
+            size_t pos = line.find("Username: ");
+            if (pos != string::npos)
+            {
+                string storedUsername = line.substr(pos + 10);
+                if (storedUsername == username)
+                {
+                    userExists = true;
+                    getline(file, line); // Read the next line (Password)
+                    pos = line.find("Password: ");
+                    string storedPassword = line.substr(pos + 10);
+                    if (storedPassword == password)
+                    {
+                        file.close();
+                        return 'T';
+                    }
+                    else
+                    {
+                        break; // Password doesn't match, no need to continue checking
+                    }
+                }
+            }
         }
-        else
-        {
-            cout << "Invalid username or password. Please try again." << endl;
-        }
+        file.close();
+        cout << "Invalid username or password. Please try again." << endl;
     }
     else if (userType == 'S' || userType == 's')
     {
-        cout << "|Enter Username: ";
+        cout << "| Enter Username: ";
         cin >> username;
-        cout << "|Enter Password: ";
+        cout << "| Enter Password: ";
         cin >> password;
 
-        Student student("s", "p"); // Dummy student object
-        if (student.verifyLogin(username, password))
+        ifstream file("students.txt");
+        string line;
+        bool userExists = false;
+        while (getline(file, line))
         {
-            return 'S';
+            size_t pos = line.find("Username: ");
+            if (pos != string::npos)
+            {
+                string storedUsername = line.substr(pos + 10);
+                if (storedUsername == username)
+                {
+                    userExists = true;
+                    getline(file, line); // Read the next line (Password)
+                    pos = line.find("Password: ");
+                    string storedPassword = line.substr(pos + 10);
+                    if (storedPassword == password)
+                    {
+                        file.close();
+                        return 'S';
+                    }
+                    else
+                    {
+                        break; // Password doesn't match, no need to continue checking
+                    }
+                }
+            }
         }
-        else
-        {
-            cout << "Invalid username or password. Please try again." << endl;
-        }
+        file.close();
+        cout << "Invalid username or password. Please try again." << endl;
     }
     else
     {
@@ -169,6 +209,7 @@ char login()
 
     return 'X';
 }
+
 
 char startingPage()
 {
@@ -520,7 +561,7 @@ int main()
                     do
                     {
                         cout << "Student logged in. Choose an option:" << endl;
-                        cout << "1. Display Most Recent Seating Plan" << endl;
+                        cout << "1. Display Seating Plan" << endl;
                         cout << "2. Logout" << endl;
                         cin >> choice;
 
