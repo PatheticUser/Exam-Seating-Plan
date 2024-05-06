@@ -59,7 +59,7 @@ void registerPage()
     cout << "-------------------------------------------------" << endl;
 }
 
-void registerUser(const string &userType)
+void registerUser(string userType)
 {
     string name, username, password;
     int age;
@@ -209,7 +209,6 @@ char login()
 
     return 'X';
 }
-
 
 char startingPage()
 {
