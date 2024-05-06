@@ -11,14 +11,7 @@ private:
     string password;
 
 public:
-    // Constructor
     Teacher(string uname, string pwd) : username(uname), password(pwd) {}
-
-    // Method to verify login credentials
-    bool verifyLogin(string uname, string pwd)
-    {
-        return (username == uname && password == pwd);
-    }
 };
 
 class Student
@@ -31,29 +24,22 @@ public:
 
     Student() : rollNumber(0), classNumber(0) {}
 
-    // Parameterized constructor
     Student(int roll, int cls) : rollNumber(roll), classNumber(cls) {}
 
-    // Getter methods
-    int getRollNumber() { return rollNumber; }
-    int getClassNumber() { return classNumber; }
-
-    // Constructor with username and password
-    Student(string uname, string pwd) : username(uname), password(pwd) {}
-
-    // Method to verify login credentials
-    bool verifyLogin(string uname, string pwd)
+    int getRollNumber()
     {
-        return (username == uname && password == pwd);
+        return rollNumber;
+    }
+    int getClassNumber()
+    {
+        return classNumber;
     }
 };
 
 void registerPage()
 {
     cout << "-------------------------------------------------" << endl;
-    cout << "|               Welcome to the Exam              |" << endl;
-    cout << "|               Seating Plan System              |" << endl;
-    cout << "|               (Register Page)                  |" << endl;
+    cout << "|            (Registeration Page)                |" << endl;
     cout << "-------------------------------------------------" << endl;
 }
 
@@ -61,26 +47,55 @@ void registerUser(string userType)
 {
     string name, username, password;
     int age;
+
     if (userType == "teacher")
     {
         string key;
-        cout << "Enter the key for registering as a teacher: ";
-        cin >> key;
-        if (key != "KEY")
+        do
         {
-            cout << "Invalid key. Registration failed." << endl;
-            return;
-        }
+            cout << "Enter the key for registering as a teacher: ";
+            cin >> key;
+            if (key != "KEY")
+            {
+                cout << "Invalid key. Please try again." << endl;
+            }
+        } while (key != "KEY");
+
+        // Clear the input buffer
+        cin.ignore(10000, '\n');
     }
-    registerPage();
+
     cout << "Registering as a " << userType << "." << endl;
+
     cout << "Enter Name: ";
-    cin.ignore(); // Ignore newline character from previous input
+    // Clear the input buffer before reading the name
+    cin.ignore(10000, '\n');
     getline(cin, name);
-    cout << "Enter Age: ";
-    cin >> age;
+
+    bool validAge = false;
+    do
+    {
+        cout << "Enter Age: ";
+        if (!(cin >> age))
+        {
+            cerr << "Invalid input. Please enter a valid number for age." << endl;
+            cin.clear();
+            cin.ignore(10000, '\n');
+        }
+        else if (age <= 0 || age >= 100)
+        {
+            cerr << "Age must be a positive number less than 100." << endl;
+            cin.ignore(10000, '\n');
+        }
+        else
+        {
+            validAge = true;
+        }
+    } while (!validAge);
+
     cout << "Enter Username: ";
     cin >> username;
+
     cout << "Enter Password: ";
     cin >> password;
 
@@ -106,7 +121,7 @@ void registerUser(string userType)
         ofstream outFile(userType + "s.txt", ios::app);
         outFile << "Name: " << name << "\nAge: " << age << "\nUsername: " << username << "\nPassword: " << password << endl;
         outFile.close();
-        cout << "Registration successful." << endl;
+        cout << "Registration Successful." << endl;
     }
 }
 
@@ -115,8 +130,6 @@ char login()
     char userType;
     string username, password;
     cout << "-------------------------------------------------" << endl;
-    cout << "|               Welcome to the Exam              |" << endl;
-    cout << "|               Seating Plan System              |" << endl;
     cout << "|                  (Login Page)                  |" << endl;
     cout << "-------------------------------------------------" << endl;
     cout << "| Define your role: (T)eacher or (S)tudent (E)xit: ";
@@ -161,7 +174,7 @@ char login()
             }
         }
         file.close();
-        cout << "Invalid username or password. Please try again." << endl;
+        cout << "Invalid Username or Password. Please try again." << endl;
     }
     else if (userType == 'S' || userType == 's')
     {
@@ -198,7 +211,7 @@ char login()
             }
         }
         file.close();
-        cout << "Invalid username or password. Please try again." << endl;
+        cout << "Invalid Username or Password. Please try again." << endl;
     }
     else
     {
@@ -247,7 +260,7 @@ public:
         delete[] seatingArrangement;
     }
 
-    // Method to save seating plan to file
+    // Method to save Seating Plan to file
     void saveToFile(string filename)
     {
         // Get current time
@@ -258,7 +271,7 @@ public:
         ofstream file(filename, ios::app);
         if (file.is_open())
         {
-            // Append seating plan with timestamp
+            // Append Seating Plan with timestamp
             file << "Exam Seating Plan (Generated at "
                  << ltm->tm_hour << ":" << ltm->tm_min << " on "
                  << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << "):" << endl;
@@ -268,7 +281,7 @@ public:
             }
             file << endl;
             file.close();
-            cout << "Seating plan appended to " << filename << endl;
+            cout << "Seating Plan appended to " << filename << endl;
         }
         else
         {
@@ -304,7 +317,7 @@ public:
         cout << "Assignment changed successfully." << endl;
     }
 
-    // Method to display the most recent seating plan from the file
+    // Method to display the most recent Seating Plan from the file
     void displaySeatingPlanFromFile(string filename)
     {
         ifstream file(filename);
@@ -334,7 +347,7 @@ public:
         }
         else
         {
-            cout << "No seating plan found." << endl;
+            cout << "No Seating Plan found." << endl;
         }
 
         file.close();
@@ -350,7 +363,7 @@ public:
         }
     }
 
-    // Method to backup seating plan to a new file
+    // Method to backup Seating Plan to a new file
     void backupToFile(string newFilename)
     {
         ifstream originalFile("Seating Plan.txt");
@@ -373,7 +386,7 @@ public:
         originalFile.close();
         backupFile.close();
 
-        cout << "Seating plan backed up to " << newFilename << endl;
+        cout << "Seating Plan backed up to " << newFilename << endl;
     }
 
     int getTotalSeats()
@@ -383,9 +396,9 @@ public:
 
     void editSeatingPlan(ExamSeatingPlan &seatingPlan, const string &filename)
     {
-        cout << "Editing Seating Plan..." << endl;
+        cout << "Entering Editing Mode..." << endl;
 
-        // Display the current seating plan
+        // Display the current Seating Plan
         seatingPlan.displaySeatingPlan();
 
         // Menu for editing options
@@ -397,7 +410,21 @@ public:
             cout << "2. Change Assignment" << endl;
             cout << "3. Exit Editing" << endl;
             cout << "Enter your choice: ";
-            cin >> editChoice;
+            bool validChoice = false;
+            do
+            {
+                cout << "Enter your choice: ";
+                if (!(cin >> editChoice))
+                {
+                    cerr << "Invalid input. Please enter a valid integer choice." << endl;
+                    cin.clear();
+                    cin.ignore(10000, '\n');
+                }
+                else
+                {
+                    validChoice = true;
+                }
+            } while (!validChoice);
 
             switch (editChoice)
             {
@@ -405,8 +432,23 @@ public:
             {
                 // Swap seats
                 int seat1, seat2;
-                cout << "Enter seat numbers to swap: ";
-                cin >> seat1 >> seat2;
+                bool validInput = false;
+                do
+                {
+                    cout << "Enter seat numbers to swap: ";
+                    if (!(cin >> seat1 >> seat2))
+                    {
+                        cerr << "Invalid input. Please enter valid seat numbers." << endl;
+                    }
+                    else if (seat1 <= 0 || seat2 <= 0)
+                    {
+                        cerr << "Seat numbers must be positive integers." << endl;
+                    }
+                    else
+                    {
+                        validInput = true;
+                    }
+                } while (!validInput);
                 if (seat1 < 1 || seat1 > seatingPlan.getTotalSeats() || seat2 < 1 || seat2 > seatingPlan.getTotalSeats())
                 {
                     cout << "Invalid seat numbers. Please try again." << endl;
@@ -422,7 +464,24 @@ public:
                 // Change assignment
                 int seatNumber, newRollNumber;
                 cout << "Enter seat number and new roll number: ";
-                cin >> seatNumber >> newRollNumber;
+                bool validInput = false;
+
+                do
+                {
+                    cout << "Enter seat number and new roll number: ";
+                    if (!(cin >> seatNumber >> newRollNumber))
+                    {
+                        cerr << "Invalid input. Please enter valid seat number and roll number." << endl;
+                    }
+                    else if (seatNumber <= 0 || newRollNumber <= 0)
+                    {
+                        cerr << "Seat number and roll number must be positive integers." << endl;
+                    }
+                    else
+                    {
+                        validInput = true;
+                    }
+                } while (!validInput);
                 if (seatNumber < 1 || seatNumber > seatingPlan.getTotalSeats())
                 {
                     cout << "Invalid seat number. Please try again." << endl;
@@ -434,7 +493,7 @@ public:
                 break;
             }
             case 3:
-                cout << "Exiting editing mode." << endl;
+                cout << "Exiting editing mode..." << endl;
                 break;
             default:
                 cout << "Invalid choice. Please try again." << endl;
@@ -442,163 +501,203 @@ public:
             }
         } while (editChoice != 3);
 
-        // After editing, display the modified seating plan
+        // After editing, display the modified Seating Plan
         cout << "Modified Seating Plan:" << endl;
         seatingPlan.displaySeatingPlan();
 
-        // Ask the user if they want to save the modified seating plan
+        // Ask the user if they want to save the modified Seating Plan
         char saveChoice;
-        cout << "Do you want to save the modified seating plan? (Y/N): ";
+        cout << "Do you want to save the modified Seating Plan? (Y/N): ";
         cin >> saveChoice;
 
         if (saveChoice == 'Y' || saveChoice == 'y')
         {
-            // Save the modified seating plan to the same file
+            // Save the modified Seating Plan to the same file
             seatingPlan.saveToFile(filename);
-            cout << "Modified seating plan saved successfully." << endl;
+            cout << "Modified Seating Plan saved successfully." << endl;
         }
         else
         {
-            cout << "Modified seating plan not saved." << endl;
+            cout << "Modified Seating Plan not saved." << endl;
         }
     }
 
-    // Method to generate seating plan with random arrangement
-int generateRandomSeatingPlan(string filename)
-{
-    int choice,editChoice;
-    do
+    // Method to generate Seating Plan with random arrangement
+    int generateRandomSeatingPlan(string filename)
     {
-        // Assign roll numbers to students in increasing order
-        for (int i = 0; i < totalStudents; ++i)
+        int choice, editChoice;
+        do
         {
-            seatingArrangement[i] = Student(i + 1, (i / (totalStudents / totalClasses)) + 1);
-        }
-
-        // Shuffle the seating arrangement randomly
-        srand(time(0));
-        for (int i = 0; i < totalStudents; ++i)
-        {
-            int randomSeat = rand() % totalStudents;
-
-            Student temp = seatingArrangement[i];
-            seatingArrangement[i] = seatingArrangement[randomSeat];
-            seatingArrangement[randomSeat] = temp;
-        }
-
-        // Display generated seating plan
-        displaySeatingPlan();
-
-        // Save seating plan to file
-        saveToFile(filename);
-        
-        cout << "Do you want to edit this seating plan? (1: Yes, 0: No) ";
-        cin >> editChoice;
-        
-        if (editChoice == 1)
-        {
-            editSeatingPlan(*this, filename); // Edit the seating plan
-        }
-
-        cout << "Do you want to generate another Random Seating Plan? (1: Yes, 0: No): ";
-        cin >> choice;
-    } while (choice != 0);
-    
-    return editChoice;
-}
-
-    // Method to generate seating plan with sequential arrangement
-int generateSequentialSeatingPlan(string filename)
-{
-    int choice, editChoice;
-    do
-    {
-        int rollNumber = 1;
-        for (int i = 0; i < totalStudents; ++i)
-        {
-            seatingArrangement[i] = Student(rollNumber, 0);
-            rollNumber++;
-        }
-
-        // Display generated seating plan
-        displaySeatingPlan();
-
-        // Save seating plan to file
-        saveToFile(filename);
-        
-        cout << "Do you want to edit this seating plan? (1: Yes, 0: No) ";
-        cin >> editChoice;
-        
-        if (editChoice == 1)
-        {
-            editSeatingPlan(*this, filename); // Edit the seating plan
-        }
-
-        cout << "Do you want to generate another Sequential Seating Plan? (1: Yes, 0: No): ";
-        cin >> choice;
-    } while (choice != 0);
-    return editChoice;
-}
-
-
-    /// Method to generate seating plan with Mixed arrangement
-int generateMixedSeatingPlan(string filename)
-{
-    int choice, editChoice;
-    do
-    {
-        int evenStepSize = totalStudents / 4;
-        int oddStepSize = totalStudents / 4;
-        int randomStepSize = totalStudents / 2;
-
-        int evenIndex = 0;
-        int oddIndex = 0;
-        int randomIndex = evenStepSize + oddStepSize;
-
-        for (int i = 0; i < evenStepSize; ++i)
-        {
-            seatingArrangement[i] = Student(evenIndex * 2 + 1, 0);
-            evenIndex++;
-        }
-
-        for (int i = 0; i < oddStepSize; ++i)
-        {
-            seatingArrangement[evenStepSize + i] = Student(oddIndex * 2 + 2, 0);
-            oddIndex++;
-        }
-
-        srand(time(0));
-        for (int i = randomIndex; i < totalStudents; ++i)
-        {
-            int randomSeat = rand() % (totalStudents - randomIndex) + randomIndex;
-            while (seatingArrangement[randomSeat].getRollNumber() != 0)
+            // Assign roll numbers to students in increasing order
+            for (int i = 0; i < totalStudents; ++i)
             {
-                randomSeat = rand() % (totalStudents - randomIndex) + randomIndex;
+                seatingArrangement[i] = Student(i + 1, (i / (totalStudents / totalClasses)) + 1);
             }
 
-            seatingArrangement[randomSeat] = Student(i + 1, 0);
-        }
+            // Shuffle the seating arrangement randomly
+            srand(time(0));
+            for (int i = 0; i < totalStudents; ++i)
+            {
+                int randomSeat = rand() % totalStudents;
 
-        // Display generated seating plan
-        displaySeatingPlan();
+                Student temp = seatingArrangement[i];
+                seatingArrangement[i] = seatingArrangement[randomSeat];
+                seatingArrangement[randomSeat] = temp;
+            }
 
-        // Save seating plan to file
-        saveToFile(filename);
-        
-        cout << "Do you want to edit this seating plan? (1: Yes, 0: No) ";
-        cin >> editChoice;
-        
-        if (editChoice == 1)
+            // Display generated Seating Plan
+            displaySeatingPlan();
+
+            // Save Seating Plan to file
+            saveToFile(filename);
+
+            cout << "Do you want to edit this Seating Plan? (1: Yes, 0: No) ";
+            bool validChoice = false;
+            do
+            {
+                cout << "Enter your choice: ";
+                if (!(cin >> editChoice))
+                {
+                    cerr << "Invalid input. Please enter a valid integer choice." << endl;
+                    cin.clear();
+                    cin.ignore(10000, '\n');
+                }
+                else
+                {
+                    validChoice = true;
+                }
+            } while (!validChoice);
+
+            if (editChoice == 1)
+            {
+                editSeatingPlan(*this, filename); // Edit the Seating Plan
+            }
+
+            cout << "Do you want to generate another Random Seating Plan? (1: Yes, 0: No): ";
+            cin >> choice;
+        } while (choice != 0);
+
+        return editChoice;
+    }
+
+    // Method to generate Seating Plan with sequential arrangement
+    int generateSequentialSeatingPlan(string filename)
+    {
+        int choice, editChoice;
+        do
         {
-            editSeatingPlan(*this, filename); // Edit the seating plan
-        }
+            int rollNumber = 1;
+            for (int i = 0; i < totalStudents; ++i)
+            {
+                seatingArrangement[i] = Student(rollNumber, 0);
+                rollNumber++;
+            }
 
-        cout << "Do you want to generate another Mixed Seating Plan? (1: Yes, 0: No): ";
-        cin >> choice;
-    } while (choice != 0);
-    return editChoice;
-}
+            // Display generated Seating Plan
+            displaySeatingPlan();
 
+            // Save Seating Plan to file
+            saveToFile(filename);
+
+            cout << "Do you want to edit this Seating Plan? (1: Yes, 0: No) ";
+            bool validChoice = false;
+            do
+            {
+                cout << "Enter your choice: ";
+                if (!(cin >> editChoice))
+                {
+                    cerr << "Invalid input. Please enter a valid integer choice." << endl;
+                    cin.clear();
+                    cin.ignore(10000, '\n');
+                }
+                else
+                {
+                    validChoice = true;
+                }
+            } while (!validChoice);
+
+            if (editChoice == 1)
+            {
+                editSeatingPlan(*this, filename); // Edit the Seating Plan
+            }
+
+            cout << "Do you want to generate another Sequential Seating Plan? (1: Yes, 0: No): ";
+            cin >> choice;
+        } while (choice != 0);
+        return editChoice;
+    }
+
+    /// Method to generate Seating Plan with Mixed arrangement
+    int generateMixedSeatingPlan(string filename)
+    {
+        int choice, editChoice;
+        do
+        {
+            int evenStepSize = totalStudents / 4;
+            int oddStepSize = totalStudents / 4;
+            int randomStepSize = totalStudents / 2;
+
+            int evenIndex = 0;
+            int oddIndex = 0;
+            int randomIndex = evenStepSize + oddStepSize;
+
+            for (int i = 0; i < evenStepSize; ++i)
+            {
+                seatingArrangement[i] = Student(evenIndex * 2 + 1, 0);
+                evenIndex++;
+            }
+
+            for (int i = 0; i < oddStepSize; ++i)
+            {
+                seatingArrangement[evenStepSize + i] = Student(oddIndex * 2 + 2, 0);
+                oddIndex++;
+            }
+
+            srand(time(0));
+            for (int i = randomIndex; i < totalStudents; ++i)
+            {
+                int randomSeat = rand() % (totalStudents - randomIndex) + randomIndex;
+                while (seatingArrangement[randomSeat].getRollNumber() != 0)
+                {
+                    randomSeat = rand() % (totalStudents - randomIndex) + randomIndex;
+                }
+
+                seatingArrangement[randomSeat] = Student(i + 1, 0);
+            }
+
+            // Display generated Seating Plan
+            displaySeatingPlan();
+
+            // Save Seating Plan to file
+            saveToFile(filename);
+
+            cout << "Do you want to edit this Seating Plan? (1: Yes, 0: No) ";
+            bool validChoice = false;
+            do
+            {
+                cout << "Enter your choice: ";
+                if (!(cin >> editChoice))
+                {
+                    cerr << "Invalid input. Please enter a valid integer choice." << endl;
+                    cin.clear();
+                    cin.ignore(10000, '\n');
+                }
+                else
+                {
+                    validChoice = true;
+                }
+            } while (!validChoice);
+
+            if (editChoice == 1)
+            {
+                editSeatingPlan(*this, filename); // Edit the Seating Plan
+            }
+
+            cout << "Do you want to generate another Mixed Seating Plan? (1: Yes, 0: No): ";
+            cin >> choice;
+        } while (choice != 0);
+        return editChoice;
+    }
 };
 
 int main()
@@ -625,7 +724,20 @@ int main()
                         cout << "1. Generate Seating Plan" << endl;
                         cout << "2. Backup Seating Plan" << endl;
                         cout << "3. Logout" << endl;
-                        cin >> choice;
+                        bool validChoice = false;
+
+                        do
+                        {
+                            cout << "Enter your choice: ";
+                            if (!(cin >> choice))
+                            {
+                                cerr << "Invalid input. Please enter a valid integer choice." << endl;
+                            }
+                            else
+                            {
+                                validChoice = true;
+                            }
+                        } while (!validChoice);
 
                         if (choice == 1)
                         {
@@ -656,7 +768,20 @@ int main()
                             cout << "2. Generate Sequential Seating Plan" << endl;
                             cout << "3. Generate Mixed Seating Plan" << endl;
                             cout << "4. Exit" << endl;
-                            cin >> choice;
+                            bool validChoice = false;
+
+                            do
+                            {
+                                cout << "Enter your choice: ";
+                                if (!(cin >> choice))
+                                {
+                                    cerr << "Invalid input. Please enter a valid integer choice." << endl;
+                                }
+                                else
+                                {
+                                    validChoice = true;
+                                }
+                            } while (!validChoice);
 
                             if (choice == 1)
                             {
@@ -693,7 +818,7 @@ int main()
                         {
                             string newFilename;
                             cout << "Enter the name of the new file: ";
-                            cin >> newFilename;
+                            getline(cin, newFilename);
                             ExamSeatingPlan seatingPlan(0, 0, 0);
                             seatingPlan.backupToFile(newFilename);
                         }
@@ -717,7 +842,20 @@ int main()
                         cout << "Student logged in. Choose an option:" << endl;
                         cout << "1. Display Seating Plan" << endl;
                         cout << "2. Logout" << endl;
-                        cin >> choice;
+                        bool validChoice = false;
+
+                        do
+                        {
+                            cout << "Enter your choice: ";
+                            if (!(cin >> choice))
+                            {
+                                cerr << "Invalid input. Please enter a valid integer choice." << endl;
+                            }
+                            else
+                            {
+                                validChoice = true;
+                            }
+                        } while (!validChoice);
 
                         if (choice == 1)
                         {
