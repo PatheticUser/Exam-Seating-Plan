@@ -4,7 +4,6 @@
 
 using namespace std;
 
-// Teacher class
 class Teacher
 {
 private:
@@ -50,6 +49,143 @@ public:
         return (username == uname && password == pwd);
     }
 };
+
+void registerPage()
+{
+    cout << "-------------------------------------------------" << endl;
+    cout << "|               Welcome to the Exam              |" << endl;
+    cout << "|               Seating Plan System              |" << endl;
+    cout << "|               (Register Page)                  |" << endl;
+    cout << "-------------------------------------------------" << endl;
+}
+
+void registerUser(const string &userType)
+{
+    string name, username, password;
+    int age;
+    if (userType == "teacher")
+    {
+        string key;
+        cout << "Enter the key for registering as a teacher: ";
+        cin >> key;
+        if (key != "KEY")
+        {
+            cout << "Invalid key. Registration failed." << endl;
+            return;
+        }
+    }
+    registerPage();
+    cout << "Registering as a " << userType << "." << endl;
+    cout << "Enter Name: ";
+    cin.ignore(); // Ignore newline character from previous input
+    getline(cin, name);
+    cout << "Enter Age: ";
+    cin >> age;
+    cout << "Enter Username: ";
+    cin >> username;
+    cout << "Enter Password: ";
+    cin >> password;
+
+    ifstream file(userType + "s.txt");
+    string line;
+    bool userExists = false;
+    while (getline(file, line))
+    {
+        if (line.find(username) != string::npos)
+        {
+            userExists = true;
+            break;
+        }
+    }
+    file.close();
+
+    if (userExists)
+    {
+        cout << "Username already exists. Please choose a different username." << endl;
+    }
+    else
+    {
+        ofstream outFile(userType + "s.txt", ios::app);
+        outFile << "Name: " << name << "\nAge: " << age << "\nUsername: " << username << "\nPassword: " << password << endl;
+        outFile.close();
+        cout << "Registration successful." << endl;
+    }
+}
+
+char login()
+{
+    char userType;
+    string username, password;
+    cout << "-------------------------------------------------" << endl;
+    cout << "|               Welcome to the Exam              |" << endl;
+    cout << "|               Seating Plan System              |" << endl;
+    cout << "|                  (Login Page)                  |" << endl;
+    cout << "-------------------------------------------------" << endl;
+    cout << "|Define your role: (T)eacher or (S)tudent (E)xit: ";
+    cin >> userType;
+
+    if (userType == 'E' || userType == 'e')
+    {
+        return 'E';
+    }
+    else if (userType == 'T' || userType == 't')
+    {
+        cout << "|Enter Username: ";
+        cin >> username;
+        cout << "|Enter Password: ";
+        cin >> password;
+
+        Teacher teacher("t", "p"); // Dummy teacher object
+        if (teacher.verifyLogin(username, password))
+        {
+            return 'T';
+        }
+        else
+        {
+            cout << "Invalid username or password. Please try again." << endl;
+        }
+    }
+    else if (userType == 'S' || userType == 's')
+    {
+        cout << "|Enter Username: ";
+        cin >> username;
+        cout << "|Enter Password: ";
+        cin >> password;
+
+        Student student("s", "p"); // Dummy student object
+        if (student.verifyLogin(username, password))
+        {
+            return 'S';
+        }
+        else
+        {
+            cout << "Invalid username or password. Please try again." << endl;
+        }
+    }
+    else
+    {
+        cout << "Invalid option. Please try again." << endl;
+    }
+
+    return 'X';
+}
+
+char startingPage()
+{
+    char choice;
+    cout << "-------------------------------------------------" << endl;
+    cout << "|               Welcome to the Exam              |" << endl;
+    cout << "|               Seating Plan System              |" << endl;
+    cout << "-------------------------------------------------" << endl;
+    cout << "| Choose an option:                              |" << endl;
+    cout << "| (L)ogin                                        |" << endl;
+    cout << "| (R)egister                                     |" << endl;
+    cout << "| (E)xit                                         |" << endl;
+    cout << "-------------------------------------------------" << endl;
+    cout << "Enter your choice: ";
+    cin >> choice;
+    return choice;
+}
 
 class ExamSeatingPlan
 {
@@ -203,7 +339,7 @@ public:
             // Save seating plan to file
             saveToFile(filename);
 
-            cout << "Do you want to generate another random seating plan? (1: Yes, 0: No): ";
+            cout << "Do you want to generate another Random Seating Plan? (1: Yes, 0: No): ";
             cin >> choice;
         } while (choice != 0);
     }
@@ -227,12 +363,12 @@ public:
             // Save seating plan to file
             saveToFile(filename);
 
-            cout << "Do you want to generate another sequential seating plan? (1: Yes, 0: No): ";
+            cout << "Do you want to generate another Sequential Seating Plan? (1: Yes, 0: No): ";
             cin >> choice;
         } while (choice != 0);
     }
 
-    // Method to generate seating plan with mixed arrangement
+    // Method to generate seating plan with Mixed arrangement
     void generateMixedSeatingPlan(string filename)
     {
         int choice;
@@ -276,177 +412,167 @@ public:
             // Save seating plan to file
             saveToFile(filename);
 
-            cout << "Do you want to generate another mixed seating plan? (1: Yes, 0: No): ";
+            cout << "Do you want to generate another Mixed Seating Plan? (1: Yes, 0: No): ";
             cin >> choice;
         } while (choice != 0);
     }
 };
 
-char login()
-{
-    char userType;
-    string username, password;
-    cout << "-------------------------------------------------" << endl;
-    cout << "|               Welcome to the Exam              |" << endl;
-    cout << "|               Seating Plan System              |" << endl;
-    cout << "|                  (Login Page)                  |" << endl;
-    cout << "-------------------------------------------------" << endl;
-    cout << "|Define your role: (T)eacher or (S)tudent ";
-    cin >> userType;
-
-    cout << "|Enter Username: ";
-    cin >> username;
-
-    cout << "|Enter Password: ";
-    cin >> password;
-
-    cout << "-------------------------------------------------" << endl;
-
-    if ((userType == 'T' || userType == 't') && username == "t" && password == "p")
-    {
-        return 'T';
-    }
-    else if ((userType == 'S' || userType == 's') && username == "s" && password == "p")
-    {
-        return 'S';
-    }
-
-    return 'X';
-}
-
 int main()
 {
-    // Create objects for Teacher and Student
-    Teacher teacher("t", "p");
-    Student student("s", "p");
-
-    char userType;
+    char choice;
     do
     {
-        userType = login();
-        if (userType == 'T')
+        choice = startingPage();
+        switch (choice)
         {
-            int choice;
+        case 'L':
+        case 'l':
+            char userType;
             do
             {
-                cout << "Teacher logged in. Choose an option:" << endl;
-                cout << "1. Generate Seating Plan" << endl;
-                cout << "2. Backup Seating Plan" << endl;
-                cout << "3. Logout" << endl;
-                cout << "4. Exit" << endl;
-                cin >> choice;
-
-                if (choice == 1)
+                userType = login();
+                if (userType == 'T')
                 {
-                    int totalClasses;
-                    cout << "Enter the number of classes: ";
-                    cin >> totalClasses;
-
-                    int *classStrength = new int[totalClasses];
-                    int totalStudents = 0;
-                    for (int i = 0; i < totalClasses; ++i)
+                    cout << "Logged in as Teacher." << endl;
+                    int choice;
+                    do
                     {
-                        cout << "Enter strength of class " << i + 1 << ": ";
-                        if (!(cin >> classStrength[i]))
+                        cout << "Teacher logged in. Choose an option:" << endl;
+                        cout << "1. Generate Seating Plan" << endl;
+                        cout << "2. Backup Seating Plan" << endl;
+                        cout << "3. Logout" << endl;
+                        cin >> choice;
+
+                        if (choice == 1)
                         {
-                            cout << "Invalid input. Please enter a numeric value." << endl;
+                            int totalClasses;
+                            cout << "Enter the number of classes: ";
+                            cin >> totalClasses;
+
+                            int *classStrength = new int[totalClasses];
+                            int totalStudents = 0;
+                            for (int i = 0; i < totalClasses; ++i)
+                            {
+                                cout << "Enter strength of class " << i + 1 << ": ";
+                                if (!(cin >> classStrength[i]))
+                                {
+                                    cout << "Invalid input. Please enter a numeric value." << endl;
+                                    delete[] classStrength;
+                                    return 1;
+                                }
+                                totalStudents += classStrength[i];
+                            }
+
+                            int totalSeats = totalStudents;
+                            string filename = "Seating Plan.txt";
+                            ExamSeatingPlan seatingPlan(totalSeats, totalStudents, totalClasses);
+
+                            cout << "Choose an option:" << endl;
+                            cout << "1. Generate Random Seating Plan" << endl;
+                            cout << "2. Generate Sequential Seating Plan" << endl;
+                            cout << "3. Generate Mixed Seating Plan" << endl;
+                            cout << "4. Exit" << endl;
+                            cin >> choice;
+
+                            if (choice == 1)
+                            {
+                                seatingPlan.generateRandomSeatingPlan(filename);
+                            }
+                            else if (choice == 2)
+                            {
+                                seatingPlan.generateSequentialSeatingPlan(filename);
+                            }
+                            else if (choice == 3)
+                            {
+                                seatingPlan.generateMixedSeatingPlan(filename);
+                            }
+                            else
+                            {
+                                cout << "Invalid choice. Please try again." << endl;
+                            }
+
                             delete[] classStrength;
-                            return 1;
                         }
-                        totalStudents += classStrength[i];
-                    }
-
-                    int totalSeats = totalStudents;
-                    string filename = "Seating Plan.txt";
-                    ExamSeatingPlan seatingPlan(totalSeats, totalStudents, totalClasses);
-
-                    cout << "Choose an option:" << endl;
-                    cout << "1. Generate Random Seating Plan" << endl;
-                    cout << "2. Generate Sequential Seating Plan" << endl;
-                    cout << "3. Generate Mixed Seating Plan" << endl;
-                    cout << "4. Exit" << endl;
-                    cin >> choice;
-
-                    if (choice == 1)
-                    {
-                        seatingPlan.generateRandomSeatingPlan(filename);
-                    }
-                    else if (choice == 2)
-                    {
-                        seatingPlan.generateSequentialSeatingPlan(filename);
-                    }
-                    else if (choice == 3)
-                    {
-                        seatingPlan.generateMixedSeatingPlan(filename);
-                    }
-                    else if (choice == 4)
-                    {
-                        cout << "Exiting program." << endl;
-                        break;
-                    }
-                    else
-                    {
-                        cout << "Invalid choice. Please try again." << endl;
-                    }
-
-                    delete[] classStrength;
-                }
-                else if (choice == 2)
+                        else if (choice == 2)
+                        {
+                            string newFilename;
+                            cout << "Enter the name of the new file: ";
+                            cin >> newFilename;
+                            ExamSeatingPlan seatingPlan(0, 0, 0);
+                            seatingPlan.backupToFile(newFilename);
+                        }
+                        else if (choice == 3)
+                        {
+                            cout << "Exiting program." << endl;
+                            break;
+                        }
+                        else
+                        {
+                            cout << "Invalid choice. Please try again." << endl;
+                        }
+                    } while (true);
+                } // Implement teacher's functionality
+                else if (userType == 'S')
                 {
-                    string newFilename;
-                    cout << "Enter the name of the new file: ";
-                    cin >> newFilename;
-                    ExamSeatingPlan seatingPlan(0, 0, 0);
-                    seatingPlan.backupToFile(newFilename);
-                }
-                else if (choice == 3)
-                {
-                    cout << "Exiting program." << endl;
-                    break;
+                    cout << "Logged in as Student." << endl;
+                    int choice;
+                    do
+                    {
+                        cout << "Student logged in. Choose an option:" << endl;
+                        cout << "1. Display Most Recent Seating Plan" << endl;
+                        cout << "2. Logout" << endl;
+                        cin >> choice;
+
+                        if (choice == 1)
+                        {
+                            ExamSeatingPlan seatingPlan(0, 0, 0);
+                            seatingPlan.displaySeatingPlanFromFile("Seating Plan.txt");
+                        }
+                        else if (choice == 2)
+                        {
+                            cout << "Logging out..." << endl;
+                            break;
+                        }
+                        else
+                        {
+                            cout << "Invalid choice. Please try again." << endl;
+                        }
+                    } while (true);
                 }
                 else
                 {
-                    cout << "Invalid choice. Please try again." << endl;
+                    cout << "Invalid user type or credentials. Please try again." << endl;
                 }
-            } while (true);
-        }
-        else if (userType == 'S')
-        {
-            int choice;
-            do
+            } while (userType != 'E');
+            break;
+        case 'R':
+        case 'r':
+            char userRole;
+            cout << "Register as (T)eacher or (S)tudent: ";
+            cin >> userRole;
+            if (userRole == 'T' || userRole == 't')
             {
-                cout << "Student logged in. Choose an option:" << endl;
-                cout << "1. Display Most Recent Seating Plan" << endl;
-                cout << "2. Logout" << endl;
-                cout << "3. Exit" << endl;
-                cin >> choice;
-
-                if (choice == 1)
-                {
-                    ExamSeatingPlan seatingPlan(0, 0, 0);
-                    seatingPlan.displaySeatingPlanFromFile("Seating Plan.txt");
-                }
-                else if (choice == 2)
-                {
-                    cout << "Logging out..." << endl;
-                    break;
-                }
-                else if (choice == 3)
-                {
-                    cout << "Exiting program." << endl;
-                    return 0;
-                }
-                else
-                {
-                    cout << "Invalid choice. Please try again." << endl;
-                }
-            } while (true);
+                registerUser("teacher");
+            }
+            else if (userRole == 'S' || userRole == 's')
+            {
+                registerUser("student");
+            }
+            else
+            {
+                cout << "Invalid option. Please try again." << endl;
+            }
+            break;
+        case 'E':
+        case 'e':
+            cout << "Exiting program." << endl;
+            break;
+        default:
+            cout << "Invalid option. Please try again." << endl;
+            break;
         }
-        else
-        {
-            cout << "Invalid user type or credentials. Please try again." << endl;
-        }
-    } while (true);
+    } while (choice != 'E' && choice != 'e');
 
     return 0;
 }
