@@ -91,18 +91,16 @@ void registerUser(string userType)
             if (key != "KEY")
             {
                 cout << "Invalid key. Please try again." << endl;
+                cin.clear(); // Clear error flags
+                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Ignore rest of the line
             }
         } while (key != "KEY");
-
-        // Clear the input buffer
-        cin.ignore(10000, '\n');
     }
 
     cout << "Registering as a " << userType << "." << endl;
 
     cout << "Enter Name: ";
-    // Clear the input buffer before reading the name
-    cin.ignore(10000, '\n');
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear input buffer
     getline(cin, name);
 
     bool validAge = false;
@@ -113,12 +111,12 @@ void registerUser(string userType)
         {
             cerr << "Invalid input. Please enter a valid number for age." << endl;
             cin.clear();
-            cin.ignore(10000, '\n');
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         else if (age <= 0 || age >= 100)
         {
             cerr << "Age must be a positive number less than 100." << endl;
-            cin.ignore(10000, '\n');
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
         else
         {
