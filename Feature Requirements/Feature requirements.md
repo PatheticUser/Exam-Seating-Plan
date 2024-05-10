@@ -1,4 +1,4 @@
-# Project (OOP & SCM)
+# Final Project (OOP & SCM)
 ## Online Exam Seating Plan
 ### Muhammad Rameez & Mehtab Haider
 #### SET-06 & SET-10
