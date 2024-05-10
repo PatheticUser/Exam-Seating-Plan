@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include<limits>
 
 using namespace std;
 
@@ -35,6 +36,38 @@ public:
         return classNumber;
     }
 };
+
+    void backupToFile()
+{
+    string originalFilename = "Seating Plan.txt";
+    ifstream originalFile(originalFilename);
+
+    if (!originalFile.is_open())
+    {
+        cout << "Unable to open file '" << originalFilename << "' for reading." << endl;
+        return;
+    }
+
+    string newFilename;
+    cout << "Enter the name of the new file: ";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear input buffer
+    getline(cin, newFilename);
+
+    ofstream backupFile(newFilename);
+    if (!backupFile.is_open())
+    {
+        cout << "Unable to open file '" << newFilename << "' for writing." << endl;
+        originalFile.close(); // Close the original file
+        return;
+    }
+
+    backupFile << originalFile.rdbuf();
+
+    originalFile.close(); // Close the original file
+    backupFile.close();
+
+    cout << "Seating Plan backed up to '" << newFilename << "'." << endl;
+}
 
 void registerPage()
 {
@@ -364,30 +397,7 @@ public:
     }
 
     // Method to backup Seating Plan to a new file
-    void backupToFile(string newFilename)
-    {
-        ifstream originalFile("Seating Plan.txt");
-        if (!originalFile.is_open())
-        {
-            cout << "Unable to open file 'Seating Plan.txt' for reading." << endl;
-            return;
-        }
-
-        ofstream backupFile(newFilename);
-        if (!backupFile.is_open())
-        {
-            cout << "Unable to open file " << newFilename << " for writing." << endl;
-            originalFile.close();
-            return;
-        }
-
-        backupFile << originalFile.rdbuf();
-
-        originalFile.close();
-        backupFile.close();
-
-        cout << "Seating Plan backed up to " << newFilename << endl;
-    }
+    // Method to backup seating plan to a new file
 
     int getTotalSeats()
     {
@@ -816,11 +826,7 @@ int main()
                         }
                         else if (choice == 2)
                         {
-                            string newFilename;
-                            cout << "Enter the name of the new file: ";
-                            getline(cin, newFilename);
-                            ExamSeatingPlan seatingPlan(0, 0, 0);
-                            seatingPlan.backupToFile(newFilename);
+                            backupToFile();
                         }
                         else if (choice == 3)
                         {
