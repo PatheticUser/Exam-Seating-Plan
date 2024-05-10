@@ -1,9 +1,9 @@
-# Project (SCM & SDLC)
+# Project (OOP & SCM)
 ## Online Exam Seating Plan
-### Muhammad Rameez & Mehtab Khaki
+### Muhammad Rameez & Mehtab Haider
 #### SET-06 & SET-10
 
-#### Functional Requirements:
+#### Feature Requirements:
 1. User Role Management
 2. User Authentication and Authorization
 3. Student Enrollment and Registration
