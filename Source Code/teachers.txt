@@ -1,4 +1,0 @@
-Name: teacher
-Age: 33
-Username: tea
-Password: pas
