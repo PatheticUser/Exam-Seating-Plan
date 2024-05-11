@@ -417,7 +417,6 @@ public:
             cout << "1. Swap Seats" << endl;
             cout << "2. Change Assignment" << endl;
             cout << "3. Exit Editing" << endl;
-            cout << "Enter your choice: ";
             bool validChoice = false;
             do
             {
