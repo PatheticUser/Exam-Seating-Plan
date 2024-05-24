@@ -287,47 +287,50 @@ public:
 
     // Method to save Seating Plan to file
     void saveToFile(string filename)
+{
+    // Get current time
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+
+    // Open file in append mode
+    ofstream file(filename, ios::app);
+    if (file.is_open())
     {
-        // Get current time
-        time_t now = time(0);
-        tm *ltm = localtime(&now);
+        // Append Seating Plan with timestamp
+        file << "Exam Seating Plan (Generated at "
+             << ltm->tm_hour << ":" << ltm->tm_min << " on "
+             << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << "):" << endl;
 
-        // Open file in append mode
-        ofstream file(filename, ios::app);
-        if (file.is_open())
+        int index = 0;
+        for (int r = 0; r < rows; ++r)
         {
-            // Append Seating Plan with timestamp
-            file << "Exam Seating Plan (Generated at "
-                 << ltm->tm_hour << ":" << ltm->tm_min << " on "
-                 << ltm->tm_mday << "/" << 1 + ltm->tm_mon << "/" << 1900 + ltm->tm_year << "):" << endl;
-
-            int index = 0;
-            for (int r = 0; r < rows; ++r)
+            for (int c = 0; c < columns; ++c)
             {
-                for (int c = 0; c < columns; ++c)
+                if (index < totalStudents)
                 {
-                    if (index < totalStudents)
+                    file << "Seat " << index + 1 << ": " << seatingArrangement[index].getRollNumber();
+                    if (c < columns - 1)
                     {
-                        file << "Seat " << index + 1 << ": " << seatingArrangement[index].getRollNumber() << "\t";
-                        ++index;
+                        file << "\t"; // Use tab to separate seats in the same row
                     }
-                    else
-                    {
-                        return;
-                    }
+                    ++index;
                 }
-                file << endl;
+                else
+                {
+                    break;
+                }
             }
-            file << endl;
-            file.close();
-            cout << "Seating Plan Saved To " << filename << endl;
+            file << endl; // New line after each row
         }
-        else
-        {
-            cout << "Unable to open file " << filename << " for writing." << endl;
-        }
+        file << endl; // Additional new line to separate seating plans
+        file.close();
+        cout << "Seating Plan Saved To " << filename << endl;
     }
-
+    else
+    {
+        cout << "Unable to open file " << filename << " for writing." << endl;
+    }
+}
     // Method to swap seats
     void swapSeats(int seat1, int seat2)
     {
@@ -337,7 +340,7 @@ public:
             return;
         }
 
-        swap(seatingArrangement[seat1 - 1],seatingArrangement[seat2 - 1]);
+        swap(seatingArrangement[seat1 - 1], seatingArrangement[seat2 - 1]);
         cout << "Seats swapped successfully.\nModified Seating Plan:" << endl;
         displaySeatingPlan();
     }
@@ -367,16 +370,34 @@ public:
 
         string line;
         string recentSeatingPlan;
+        string currentSeatingPlan;
+        bool insideSeatingPlan = false;
+
         while (getline(file, line))
         {
             if (line.find("Exam Seating Plan") != string::npos)
             {
-                recentSeatingPlan = line + "\n";
-                while (getline(file, line) && !line.empty())
+                currentSeatingPlan = line + "\n";
+                insideSeatingPlan = true;
+            }
+            else if (insideSeatingPlan)
+            {
+                if (line.empty())
                 {
-                    recentSeatingPlan += line + "\n";
+                    insideSeatingPlan = false;
+                    recentSeatingPlan = currentSeatingPlan;
+                }
+                else
+                {
+                    currentSeatingPlan += line + "\n";
                 }
             }
+        }
+
+        // Handle the case where the file does not end with an empty line
+        if (insideSeatingPlan)
+        {
+            recentSeatingPlan = currentSeatingPlan;
         }
 
         if (!recentSeatingPlan.empty())
@@ -598,7 +619,7 @@ public:
             {
                 int randomSeat = rand() % totalStudents;
 
-                swap(seatingArrangement[i],seatingArrangement[randomSeat]);
+                swap(seatingArrangement[i], seatingArrangement[randomSeat]);
             }
 
             askRowColumn();
